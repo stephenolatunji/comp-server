@@ -34,14 +34,27 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
-      displayName: Build and push an image to container registry
+      displayName: Build #and push an image to container registry
       inputs:
-        command: buildAndPush
+        command: build #AndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
+
+        arguments: --build-arg COMPANY_USER=$(USER) --build-arg COMPANY_HOST=$(HOST) --build-arg COMPANY_DB=$(DB) --build-arg COMPANY_PASSWORD=$(PASSWORD) --build-arg COMPANY_JWT=$(JWT_SECRET) --build-arg COMPANY_PORT=$(PORT)
+
         tags: |
           $(tag)
+
+    - task: Docker@2
+      displayName: Push
+      inputs:
+        command: push
+        repository: $(imageRepository)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)    
+
 
     - upload: manifests
       artifact: manifests
