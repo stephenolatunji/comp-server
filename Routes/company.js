@@ -1,5 +1,5 @@
 const express = require('express');
-const connectDB = require('../Config/db');
+const connectDB = require('../config/db');
 const router = express.Router();
 
 // Get all companies
