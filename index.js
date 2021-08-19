@@ -31,7 +31,7 @@ app.use('/register', register);
 app.use('/company', company);
 app.use('/company-status', setStatus);
 
-const port = process.env.PORT || 2000;
+const port = process.env.PORT || 80;
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`)
