@@ -44,6 +44,15 @@ stages:
         tags: |
           $(tag)
 
+    - task: Docker@2
+      displayName: Push
+      inputs:
+        command: push
+        repository: $(imageRepository)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)        
+
     - upload: manifests
       artifact: manifests
 
