@@ -11,16 +11,18 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '69c37089-ec6c-4eb4-9b70-00ee7d68f80c'
+  dockerRegistryServiceConnection: '3d27d23d-a187-41ae-b756-2385880ef51c'
   imageRepository: 'dmscompanyservice'
-  containerRegistry: 'acrdmstest.azurecr.io'
+  containerRegistry: 'dmsacr.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'acrdmstest5685825e-auth'
+  imagePullSecret: 'dmsacr13785139-auth'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
+  # Name of the new namespace being created to deploy the PR changes.
+  k8sNamespaceForPR: 'review-app-$(System.PullRequest.PullRequestId)'
 
 stages:
 - stage: Build
@@ -39,7 +41,7 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
 
-        arguments: --build-arg COMPANY_USER=$(USER) --build-arg COMPANY_HOST=$(HOST) --build-arg COMPANY_DB=$(DB) --build-arg COMPANY_PASSWORD=$(PASSWORD) --build-arg COMPANY_JWT=$(JWT_SECRET)
+        arguments: --build-arg COMPANY_USER=$(USER) --build-arg COMPANY_HOST=$(HOST) --build-arg COMPANY_DB=$(DB) --build-arg COMPANY_PASSWORD=$(PASSWORD) --build-arg COMPANY_JWT=$(JWT_SECRET) --build-arg COMPANY_PORT=$(PORT)
 
         tags: |
           $(tag)
@@ -51,7 +53,8 @@ stages:
         repository: $(imageRepository)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $(tag)        
+          $(tag)    
+
 
     - upload: manifests
       artifact: manifests
@@ -62,10 +65,11 @@ stages:
 
   jobs:
   - deployment: Deploy
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
-    environment: 'DMSCompanyService-3740.com-serv'
+    environment: 'DMSCompanyService.company-service'
     strategy:
       runOnce:
         deploy:
@@ -89,3 +93,63 @@ stages:
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
 
+  - deployment: DeployPullRequest
+    displayName: Deploy Pull request
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/pull/'))
+    pool:
+      vmImage: $(vmImageName)
+
+    environment: 'DMSCompanyService.$(k8sNamespaceForPR)'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - reviewApp: company-service
+
+          - task: Kubernetes@1
+            displayName: 'Create a new namespace for the pull request'
+            inputs:
+              command: apply
+              useConfigurationFile: true
+              inline: '{ "kind": "Namespace", "apiVersion": "v1", "metadata": { "name": "$(k8sNamespaceForPR)" }}'
+
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              namespace: $(k8sNamespaceForPR)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+          - task: KubernetesManifest@0
+            displayName: Deploy to the new namespace in the Kubernetes cluster
+            inputs:
+              action: deploy
+              namespace: $(k8sNamespaceForPR)
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
+          - task: Kubernetes@1
+            name: get
+            displayName: 'Get services in the new namespace'
+            continueOnError: true
+            inputs:
+              command: get
+              namespace: $(k8sNamespaceForPR)
+              arguments: svc
+              outputFormat: jsonpath='http://{.items[0].status.loadBalancer.ingress[0].ip}:{.items[0].spec.ports[0].port}'
+
+          # Getting the IP of the deployed service and writing it to a variable for posing comment
+          - script: |
+              url="$(get.KubectlOutput)"
+              message="Your review app has been deployed"
+              if [ ! -z "$url" -a "$url" != "http://:" ]
+              then
+                message="${message} and is available at $url.<br><br>[Learn More](https://aka.ms/testwithreviewapps) about how to test and provide feedback for the app."
+              fi
+              echo "##vso[task.setvariable variable=GITHUB_COMMENT]$message"
