@@ -22,7 +22,7 @@ ENV JWT_SECRET $COMPANY_JWT
 COPY package*.json /usr/app/
 RUN npm install
 COPY . /usr/app
-EXPOSE 2000
+EXPOSE 80
 
 
 CMD ["npm", "start"]
