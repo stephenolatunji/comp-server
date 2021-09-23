@@ -6,7 +6,7 @@ const router = express.Router();
 router.route('/getall')
 .get(async(req, res)=>{
     try{
-        await connectDB.query(`SELECT * FROM companies`, (err, results)=>{
+        await connectDB.query(`SELECT * FROM company`, (err, results)=>{
             if(err){
                 return res.status(400).json({success: false, msg: 'Unable to fetch companies'})
             }
@@ -27,12 +27,12 @@ router.route('/:id')
     const id = req.params;
 
     try{
-        await connectDB.query(`SELECT * FROM companies WHERE id ='${id}'`, (err, results)=>{
+        await connectDB.query(`SELECT * FROM company WHERE id ='${id}'`, (err, results)=>{
             if(results.length > 0){
                 return res.status(200).json({success: true, results})
             }
             else{
-                return res.status(404).json({success: false, msg: 'Can not find delivery'})
+                return res.status(404).json({success: false, msg: 'Can not find company'})
             }
         })
     }
@@ -50,7 +50,7 @@ router.route('/code/:id')
     const id = req.params.id;
 
     try{
-        await connectDB.query(`SELECT * FROM companies WHERE company_code = '${id}'`, (err, results)=>{
+        await connectDB.query(`SELECT * FROM company WHERE company_code = '${id}'`, (err, results)=>{
             if(results.length > 0){
                 return res.status(200).json({success: true, results})
             }
@@ -70,7 +70,7 @@ router.route('/status/:status')
     const status = req.params;
  
     try{
-        await connectDB.query(`SELECT * FROM companies WHERE status =  '${status}'`, (err, results)=>{
+        await connectDB.query(`SELECT * FROM company WHERE status =  '${status}'`, (err, results)=>{
             if(results.length > 0){
                 return res.status(200).json({success: true, results})
             }

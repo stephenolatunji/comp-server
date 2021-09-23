@@ -1,35 +1,29 @@
-const mysql = require('mysql')
+const sql = require('mssql');
 require('dotenv').config();
 
-
-const connectDB = mysql.createConnection({
-    host: process.env.HOST,
-    user: 'companydb@dmscompanydb',
+const config = {
+    server: process.env.HOST,
+    user: 'sqlserver',
     password: process.env.PASSWORD,
     database: process.env.DB,
-    ssl: true
+    options: {encrypt: true, trustServerCertificate: false},
+}
+const connectDB = sql.connect(config, (err) =>{
+    if(err){
+        console.log(err)
+    }
+    console.log('DB connected...')
 });
 
 const sql2 = `CREATE TABLE company IF NOT EXISTS(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    firstname VARCHAR(255), 
-    lastname VARCHAR(255)),
-    email VARCHAR(255)),
-    company VARCHAR(255))
-    role VARCHAR(255)),
-    registeredOn VARCHAR(255)),
-    status VARCHAR(255))
-    `;
+    id int IDENTITY(1, 1) PRIMARY KEY,
+    company_code varchar(255) NOT NULL, 
+    company_type varchar(255) NOT NULL,
+    company_name varchar(255) NOT NULL,
+    country varchar(255) NOT NULL,
+    email varchar(255) NULL,
+    status varchar(255) NULL
+    )`;
 
-connectDB.connect((error) =>{
-    if(error) throw error;
-    
-    // connectDB.query(sql1, (err, result) =>console.log("Database created"));
-    console.log('DB connected...');
-    // connectDB.query(sql2, ( err, result) =>console.log("customer table created"));
-});
-setInterval(function () {
-    connectDB.query('SELECT 1');
-}, 3000);
 
 module.exports = connectDB; 

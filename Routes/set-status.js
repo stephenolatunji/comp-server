@@ -10,7 +10,7 @@ router.route('/:id')
     const {status} = req.body;
  
     try{
-        await connectDB.query(`UPDATE companies SET status = '${status}', WHERE id = '${id}' `, (err, results)=>{
+        await connectDB.query(`UPDATE company SET status = '${status}', WHERE id = '${id}' `, (err, results)=>{
             if(err){
                 return res.status(404).json({success: false, msg: 'Can not update status'});
             }
