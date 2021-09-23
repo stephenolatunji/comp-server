@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: dmscompanyservice 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dmscompanyservice
+  template:
+    metadata:
+      labels:
+        app: dmscompanyservice 
+    spec:
+      containers:
+        - name: dmscompanyservice 
+          image: dmsacr.azurecr.io/dmscompanyservice:177
+          ports:
+          - containerPort: 80
