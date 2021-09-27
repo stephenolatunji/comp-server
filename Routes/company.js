@@ -11,7 +11,7 @@ router.route('/getall')
                 return res.status(400).json({success: false, msg: 'Unable to fetch companies'})
             }
             else{
-                return res.status(200).json({success: true, results})
+                return res.status(200).json({success: true, result: results.recordset})
             }
         })
     }
@@ -24,15 +24,15 @@ router.route('/getall')
 // Get company by Id
 router.route('/:id')
 .get(async(req, res)=>{
-    const id = req.params;
+    const id = req.params.id;
 
     try{
         await connectDB.query(`SELECT * FROM company WHERE id ='${id}'`, (err, results)=>{
-            if(results.length > 0){
-                return res.status(200).json({success: true, results})
+            if(err){
+                return res.status(404).json({success: false, msg: 'Can not find company'});
             }
             else{
-                return res.status(404).json({success: false, msg: 'Can not find company'})
+                return res.status(200).json({success: true, result: results.recordset})
             }
         })
     }
@@ -51,11 +51,12 @@ router.route('/code/:id')
 
     try{
         await connectDB.query(`SELECT * FROM company WHERE company_code = '${id}'`, (err, results)=>{
-            if(results.length > 0){
-                return res.status(200).json({success: true, results})
+            if(err){
+                
+                return res.status(404).json({success: false, msg: 'Can not find company'});
             }
             else{
-                return res.status(404).json({success: false, msg: 'Can not find company'})
+                return res.status(200).json({success: true, result: results.recordset});
             }
         })
     }
@@ -67,15 +68,16 @@ router.route('/code/:id')
 // Get all company by status
 router.route('/status/:status')
 .get(async(req, res)=>{
-    const status = req.params;
+    const status = req.params.status;
  
     try{
         await connectDB.query(`SELECT * FROM company WHERE status =  '${status}'`, (err, results)=>{
-            if(results.length > 0){
-                return res.status(200).json({success: true, results})
+            if(err){
+                
+                return res.status(404).json({success: false, msg: 'Can not find companies'});
             }
             else{
-                return res.status(404).json({success: false, msg: 'Can not find companies'})
+                return res.status(200).json({success: true, result: results.recordset});
             }
         })
     }
