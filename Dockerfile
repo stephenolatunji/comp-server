@@ -1,7 +1,7 @@
 FROM node:14-alpine
 RUN mkdir -p /usr/src/app
 
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
 #Add environmental variables
 ARG COMPANY_USER 
@@ -19,9 +19,9 @@ ENV JWT_SECRET $COMPANY_JWT
 #ENV PORT $COMPANY_PORT
 
 
-COPY package*.json /usr/src/app/
+COPY package*.json /usr/app/
 RUN npm install
-COPY . /usr/src/app
+COPY . /usr/app
 EXPOSE 80
 
 
