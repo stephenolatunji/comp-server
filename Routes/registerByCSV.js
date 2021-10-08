@@ -120,21 +120,4 @@ router.route('/upload')
 module.exports = router;  
 
 
- //    const one = {
-            //     salesforceCode,
-            //     type,
-            //     compName,
-            //     country,
-            //     email,
-            //     district,
-            //     region,
-            //     address,
-            //     Owner_Name,
-            //     Owner_Phone,
-            //     DD_Name,
-            //     DD_Phone,
-            //     lat,
-            //     long,
-            //     sysproCode,
-            //     code
-            // }
+ 
