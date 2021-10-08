@@ -20,7 +20,8 @@ app.use(helmet(
 ));
 const register = require('./Routes/register');
 const company = require('./Routes/company');
-const setStatus = require('./Routes/set-status')
+const setStatus = require('./Routes/set-status');
+const upload = require('./Routes/registerByCSV');
 
 
 app.get('/', (req, res) => {
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
 app.use('/register', register);
 app.use('/company', company);
 app.use('/company-status', setStatus);
+app.use('/upload-company', upload);
 
 const port = process.env.PORT || 80;
 

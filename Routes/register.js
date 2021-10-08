@@ -27,13 +27,13 @@ router.route('/')
                     connectDB.query(`INSERT INTO companies_tb (DIST_Code, SF_code, SYS_Code,
                         company_type, company_name, country, email, status, district, 
                         region, address, Owner_Name, Owner_Phone, DD_Name, DD_Phone, lat, long, registeredOn) 
-                        VALUES('${code}', '${salesforceCode}', '${sysproCode}' '${type}', '${compName}', '${country}',
+                        VALUES('${code}', '${salesforceCode}', '${sysproCode}', '${type}', '${compName}', '${country}',
                         '${email}','Active', '${district}', '${region}', '${address}', '${Owner_Name}', 
                         '${Owner_Phone}', '${DD_Name}', '${DD_Phone}', '${lat}', '${long}', '${date}' )`, (err, result) =>{
                         if(err){
-                            res.status(400).json({success: false, msg: 'Can not register company'});
+                          return res.status(400).json({success: false, msg: 'Can not register company'});
                         }
-                        res.status(200).json({success: true, msg: 'Company registration successful', results});
+                        res.status(200).json({success: true, msg: 'Company registration successful', results: result.recordset});
                     })
                 }
             })
