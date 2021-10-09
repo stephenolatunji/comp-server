@@ -4,7 +4,6 @@ const router = express.Router();
 const csv = require('csvtojson');
 const multer = require('multer')
 const fs = require('fs');
-// const { json } = require('express');
 const randomize = require('randomatic');
 
 global.__basedir = __dirname;
@@ -39,7 +38,7 @@ router.route('/upload')
                 return res.status(400).json({success: false, msg: 'Please upload a CSV file'});
             }
           else {  let filePath = __basedir + '/uploads/' + req.file.filename;
-         
+            var nonExistingUser = 0;
            
             const date = new Date().getFullYear()+'-'+(new Date().getMonth()+parseInt("1"))+'-'+new Date().getDate();
             const dataArray = await csv().fromFile(filePath);
@@ -65,10 +64,10 @@ router.route('/upload')
                const split_type = type.charAt(0).toUpperCase();
 
                const code = `${split_type}${split_type}${split_name}${random}`;
-                let nonExistingUser = 0;
+                
 
                 await connectDB.query(`SELECT COUNT(SF_Code) AS count FROM companies_tb WHERE SF_Code = '${salesforceCode}'`, async(err, result)=>{
-                   
+                    nonExistingUser += result.recordset[0].count ? 0 : 1
                     if(!result.recordset[0].count){
                         await connectDB.query(
                             `INSERT INTO companies_tb (DIST_Code, SF_code, SYS_Code,
@@ -81,24 +80,25 @@ router.route('/upload')
                                    return res.status(400).json({success: false, msg: 'Can not register companies', err});
                                 }
                                 else{
-                                   if(i == dataArray.length -1){
-                                    nonExistingUser += 1
-                                    fs.unlink(filePath,()=>{
-                                        res.status(200).json({success: true, msg: `${nonExistingUser} ${ nonExistingUser > 1 ? 'companies' : 'company'}  registration successful. ${dataArray.length - nonExistingUser} were already registered`});
-                                    },err =>{
-                                        res.status(500).json({success: false, msg: `Uploaded but file no delete ooo!!! ${err}`});
-                                    }
-                                    )
-                                 
-                                   }
+                                    if(i == dataArray.length -1){
+                                        fs.unlink(filePath,()=>{
+                                            res.status(200).json({success: true, msg: `${nonExistingUser} ${ nonExistingUser > 1 ? 'companies' : 'company'}  registration successful. ${dataArray.length - nonExistingUser} were already registered`});
+                                        },err =>{
+                                            res.status(500).json({success: false, msg: `Uploaded but file no delete ooo!!! ${err}`});
+                                        }
+                                        )
+                                     
+                                       }
+                           
                                 }
                             }
             
                             )
                     }else{
-                        if(i == dataArray.length -1){
-                            fs.unlink(filePath,()=>{
+                        if(i == dataArray.length - 1){
+                            fs.unlink(filePath, ()=>{
                                 res.status(200).json({success: true, msg: `${nonExistingUser} ${ nonExistingUser > 1 ? 'companies' : 'company'}  registration successful. ${dataArray.length - nonExistingUser} were already registered`});
+                             
                             },err =>{
                                 res.status(500).json({success: false, msg: `Uploaded but file no delete ooo!!! ${err}`});
                             }
@@ -113,7 +113,7 @@ router.route('/upload')
             
         }
         catch(err){
-            
+            res.status(500).json({success: false, msg: 'Server error', err})
         }
     })
 
