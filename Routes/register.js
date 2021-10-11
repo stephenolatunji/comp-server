@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const connectDB = require('../config/db');
 const randomize = require('randomatic');
+const { reset } = require('nodemon');
 
 
 router.route('/')
@@ -29,11 +30,20 @@ router.route('/')
                         region, address, Owner_Name, Owner_Phone, DD_Name, DD_Phone, lat, long, registeredOn) 
                         VALUES('${code}', '${salesforceCode}', '${sysproCode}', '${type}', '${compName}', '${country}',
                         '${email}','Active', '${district}', '${region}', '${address}', '${Owner_Name}', 
-                        '${Owner_Phone}', '${DD_Name}', '${DD_Phone}', '${lat}', '${long}', '${date}' )`, (err, result) =>{
-                        if(err){
-                          return res.status(400).json({success: false, msg: 'Can not register company'});
+                        '${Owner_Phone}', '${DD_Name}', '${DD_Phone}', '${lat}', '${long}', '${date}' )`, async(err, result) =>{
+                        if(result.rowsAffected > 0){
+                          await connectDB.query(`SELECT * FROM companies_tb WHERE SF_Code = '${salesforceCode}'`, (err, results)=>{
+                            if(results.recordset.length > 0){
+                                res.status(200).json({success: true, msg: 'Successful registration!', result: results.recordset[0]})
+                            }
+                            else{
+                                res.status(400).json({success: false, msg: 'Can not fetch newly registered company'})
+                            }
+                          })
                         }
-                        res.status(200).json({success: true, msg: 'Company registration successful', results: result.recordset});
+                        else{
+                            res.status(200).json({success: true, msg: 'Company registration not successful', results: result.recordset});
+                        }
                     })
                 }
             })
