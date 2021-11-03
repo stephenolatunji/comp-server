@@ -9,7 +9,7 @@ router.route('/')
     .post(async(req, res)=>{
        const {
            salesforceCode, type, compName, 
-           country, email, district, region, 
+           country, email, district, state, region, 
            address, Owner_Name, Owner_Phone, 
            DD_Name, DD_Phone, lat, long, sysproCode,
         } = req.body;
@@ -29,7 +29,7 @@ router.route('/')
                         company_type, company_name, country, email, status, district, 
                         region, address, Owner_Name, Owner_Phone, DD_Name, DD_Phone, lat, long, registeredOn) 
                         VALUES('${code}', '${salesforceCode}', '${sysproCode}', '${type}', '${compName}', '${country}',
-                        '${email}','Active', '${district}', '${region}', '${address}', '${Owner_Name}', 
+                        '${email}','Active', '${district}', '${state}', '${region}', '${address}', '${Owner_Name}', 
                         '${Owner_Phone}', '${DD_Name}', '${DD_Phone}', '${lat}', '${long}', '${date}' )`, async(err, result) =>{
                         if(result.rowsAffected > 0){
                           await connectDB.query(`SELECT * FROM companies_tb WHERE SF_Code = '${salesforceCode}'`, (err, results)=>{
