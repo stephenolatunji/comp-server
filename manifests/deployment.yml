@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: dmscompanyservice 
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: dmscompanyservice
@@ -12,8 +12,10 @@ spec:
       labels:
         app: dmscompanyservice 
     spec:
+      nodeSelector:
+        "kubernetes.io/os": linux      
       containers:
         - name: dmscompanyservice 
-          image: dmsacr.azurecr.io/dmscompanyservice
+          image: microservicesacrafrdev.azurecr.io/dmscompanyservice:latest
           ports:
           - containerPort: 80
