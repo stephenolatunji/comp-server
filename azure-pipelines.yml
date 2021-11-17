@@ -106,6 +106,12 @@ jobs:
           tags: |
             $(tag)
   
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/manifests'
+        artifact: 'manifests'
+        publishLocation: 'pipeline'
+
     - task: KubernetesManifest@0
       inputs:
         action: 'deploy'
