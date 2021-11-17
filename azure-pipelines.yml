@@ -19,7 +19,7 @@ variables:
   value: '**/Dockerfile'
 
 - name: 'tag'
-  value: 'latest'
+  value: '$(Build.BuildNumber)'
 
 - name: 'vmImageName'
   value: 'ubuntu-latest'
