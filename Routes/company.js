@@ -6,7 +6,7 @@ const router = express.Router();
 router.route('/getall')
 .get(async(req, res)=>{
     try{
-        await connectDB.query(`SELECT * FROM companies_tb`, (err, results)=>{
+        await connectDB.query(`EXEC getAllCompanies`, (err, results)=>{
             if(err){
                 return res.status(400).json({success: false, msg: 'Unable to fetch companies'})
             }
@@ -27,7 +27,7 @@ router.route('/:id')
     const id = req.params.id;
 
     try{
-        await connectDB.query(`SELECT * FROM companies_tb WHERE id ='${id}'`, (err, results)=>{
+        await connectDB.query(`EXEC getCompanyById @id ='${id}'`, (err, results)=>{
             if(err){
                 return res.status(404).json({success: false, msg: 'Can not find company'});
             }
@@ -44,13 +44,13 @@ router.route('/:id')
 
 
 
-//  Get all company by code
+//  Get company by code
 router.route('/code/:id')
 .get(async(req, res)=>{
     const id = req.params.id;
 
     try{
-        await connectDB.query(`SELECT * FROM companies_tb WHERE DIST_Code = '${id}'`, (err, results)=>{
+        await connectDB.query(`EXEC getCompanyByCode @distCode = '${id}'`, (err, results)=>{
             if(err){
                 
                 return res.status(404).json({success: false, msg: 'Can not find company'});
@@ -71,7 +71,7 @@ router.route('/status/:status')
     const status = req.params.status;
  
     try{
-        await connectDB.query(`SELECT * FROM companies_tb WHERE status =  '${status}'`, (err, results)=>{
+        await connectDB.query(`EXEC getCompanyByStatus @status =  '${status}'`, (err, results)=>{
             if(err){
                 
                 return res.status(404).json({success: false, msg: 'Can not find companies'});
@@ -91,7 +91,7 @@ router.route('/salesforce/:code')
     const salesforceCode = req.params.code;
 
     try{
-        await connectDB.query(`SELECT * FROM companies_tb WHERE SF_Code = '${salesforceCode}'`, (err, results)=>{
+        await connectDB.query(`EXEC getCompanyBySFCode @SFCode = '${salesforceCode}'`, (err, results)=>{
             if(err){
                 
                 return res.status(404).json({success: false, msg: 'Can not find company'});
