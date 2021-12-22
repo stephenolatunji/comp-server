@@ -2,10 +2,10 @@ const sql = require('mssql');
 require('dotenv').config();
 
 const config = {
-    server: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DB,
+    server: microservices-sql-afr-dev.database.windows.net,
+    user: DmsSqlAdminUser,
+    password: xqQKzGePVVRobatEEgzlonyRp5dW6YkzruB6rbFtKYY,
+    database: dmscompanydb,
     options: {encrypt: true, trustServerCertificate: false},
 
 }
