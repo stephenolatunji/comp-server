@@ -8,7 +8,7 @@ resources:
     name: DevSecOps/DevSecOps
 
 variables:
-#- group: CompanyService
+- group: CompanyService
 - name: dockerRegistryServiceConnection
   value: 'ACR-Dev'
 
