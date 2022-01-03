@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const config = {
     server: process.env.HOST,
-    user: 'DmsSqlAdminUser',
+    user:   process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DB,
     options: {encrypt: true, trustServerCertificate: false},
