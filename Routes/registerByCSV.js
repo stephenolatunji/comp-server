@@ -50,6 +50,7 @@ router.route('/upload')
                const country = singleData.country.toString(); 
                const email = singleData.email.toString();
                const district = singleData.district.toString();
+               const state = singleData.state.toString();
                const region = singleData.region.toString();
                const address = singleData.address.toString(); 
                const Owner_Name = singleData.Owner_Name.toString();
@@ -71,10 +72,10 @@ router.route('/upload')
                     if(!result.recordset[0].count){
                         await connectDB.query(
                             `INSERT INTO companies_tb (DIST_Code, SF_code, SYS_Code,
-                            company_type, company_name, country, email, status, district, 
+                            company_type, company_name, country, email, status, district, state 
                             region, address, Owner_Name, Owner_Phone, DD_Name, DD_Phone, lat, long, registeredOn)
                             VALUES('${code}', '${salesforceCode}', '${sysproCode}', '${type}', '${compName}', '${country}',
-                            '${email}','Active', '${district}', '${region}', '${address}', '${Owner_Name}', 
+                            '${email}','Active', '${district}', '${state}', '${region}', '${address}', '${Owner_Name}', 
                             '${Owner_Phone}', '${DD_Name}', '${DD_Phone}', '${lat}', '${long}', '${date}' )`, (err, result) =>{
                                 if(err){
                                    return res.status(400).json({success: false, msg: 'Can not register companies', err});
@@ -118,6 +119,3 @@ router.route('/upload')
     })
 
 module.exports = router;  
-
-
- 
