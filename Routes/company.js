@@ -106,4 +106,24 @@ router.route('/salesforce/:code')
     }
 });
 
+router.route('/companies/:country')
+.get(async(req, res)=>{
+    const country = req.params.country;
+
+    try{
+        await connectDB.query(`EXEC getCompanyByCountry @country = '${country.trim()}'`, (err, results)=>{console.log(results);
+            if(err){
+                
+                return res.status(404).json({success: false, msg: 'Can not find companies'});
+            }
+            else{
+                return res.status(200).json({success: true, result: results.recordset});
+            }
+        })
+    }
+    catch(err){
+        res.status(500).json({success: false, msg: 'Server error!'})
+    }
+});
+
 module.exports = router;
