@@ -111,7 +111,7 @@ router.route('/companies/:country')
     const country = req.params.country;
 
     try{
-        await connectDB.query(`EXEC getCompanyByCountry @country = '${country.trim()}'`, (err, results)=>{console.log(results);
+        await connectDB.query(`EXEC getCompanyByCountry @country = '${country.trim()}'`, (err, results)=>{
             if(err){
                 
                 return res.status(404).json({success: false, msg: 'Can not find companies'});
