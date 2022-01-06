@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const connectDB = require('../config/db');
 const randomize = require('randomatic');
-const { reset } = require('nodemon');
 
 
 router.route('/')
@@ -20,26 +19,21 @@ router.route('/')
        const code = `${split_type}${split_type}${split_name}${random}`;
         
        try{
-            await connectDB.query(`SELECT * FROM companies_tb WHERE SF_code = '${salesforceCode}'`, (err, results) =>{
+            await connectDB.query(`EXEC getCompanyBySFCode @SFCode = '${salesforceCode}'`, (err, results) =>{
                 if(results.recordset.length > 0){
                    return res.status(400).json({success: false, msg: 'User company already exists.'})
                 }
                 else{
-                    connectDB.query(`INSERT INTO companies_tb (DIST_Code, SF_code, SYS_Code,
-                        company_type, company_name, country, email, status, district, state, 
-                        region, address, Owner_Name, Owner_Phone, DD_Name, DD_Phone, lat, long, registeredOn) 
-                        VALUES('${code}', '${salesforceCode}', '${sysproCode}', '${type}', '${compName}', '${country}',
-                        '${email}','Active', '${district}', '${state}', '${region}', '${address}', '${Owner_Name}', 
-                        '${Owner_Phone}', '${DD_Name}', '${DD_Phone}', '${lat}', '${long}', '${date}' )`, async(err, result) =>{
+                    connectDB.query(`EXEC registerCompany @distributorCode = '${code}', @salesforceCode = '${salesforceCode}', 
+                    @sysproCode = '${sysproCode}', @companyType = '${type}', @companyName ='${compName}', 
+                    @country = '${country}', @email = '${email}', @district = '${district}', @state = '${state}',
+                    @region = '${region}', @address = '${address}', @Owner_Name = '${Owner_Name}',
+                    @Owner_Phone = '${Owner_Phone}', @DD_Name = '${DD_Name}', @DD_Phone = '${DD_Phone}', 
+                    @lat = '${lat}', @long = '${long}', @registeredOn = '${date}'`, async(err, result) => {
                         if(result.rowsAffected > 0){
-                          await connectDB.query(`SELECT * FROM companies_tb WHERE SF_Code = '${salesforceCode}'`, (err, results)=>{
-                            if(results.recordset.length > 0){
-                                res.status(200).json({success: true, msg: 'Successful registration!', result: results.recordset[0]})
-                            }
-                            else{
-                                res.status(400).json({success: false, msg: 'Can not fetch newly registered company'})
-                            }
-                          })
+                        
+                           res.status(200).json({success: true, msg: 'Successful registration!', result: result.recordset[0]})
+                           
                         }
                         else{
                             res.status(200).json({success: true, msg: 'Company registration not successful', results: result.recordset});
