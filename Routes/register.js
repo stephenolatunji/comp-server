@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const connectDB = require('../config/db');
 const randomize = require('randomatic');
+const { reset } = require('nodemon');
 
 
 router.route('/')
@@ -19,7 +20,7 @@ router.route('/')
        const code = `${split_type}${split_type}${split_name}${random}`;
         
        try{
-            await connectDB.query(`EXEC getCompanyBySFCode @SFCode = '${salesforceCode}'`, (err, results) =>{
+            await connectDB.query(`SELECT * FROM companies_tb WHERE SF_code = '${salesforceCode}'`, (err, results) =>{
                 if(results.recordset.length > 0){
                    return res.status(400).json({success: false, msg: 'User company already exists.'})
                 }
@@ -31,9 +32,14 @@ router.route('/')
                     @Owner_Phone = '${Owner_Phone}', @DD_Name = '${DD_Name}', @DD_Phone = '${DD_Phone}', 
                     @lat = '${lat}', @long = '${long}', @registeredOn = '${date}'`, async(err, result) => {
                         if(result.rowsAffected > 0){
-                        
-                           res.status(200).json({success: true, msg: 'Successful registration!', result: result.recordset[0]})
-                           
+                          await connectDB.query(`SELECT * FROM companies_tb WHERE SF_Code = '${salesforceCode}'`, (err, results)=>{
+                            if(results.recordset.length > 0){
+                                res.status(200).json({success: true, msg: 'Successful registration!', result: results.recordset[0]})
+                            }
+                            else{
+                                res.status(400).json({success: false, msg: 'Can not fetch newly registered company'})
+                            }
+                          })
                         }
                         else{
                             res.status(200).json({success: true, msg: 'Company registration not successful', results: result.recordset});
