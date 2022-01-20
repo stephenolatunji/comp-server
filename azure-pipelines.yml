@@ -1,5 +1,5 @@
 trigger:
-- devsecops-enablement
+- qa
 
 resources:
   repositories:
@@ -10,7 +10,7 @@ resources:
 variables:
 - group: CompanyService
 - name: dockerRegistryServiceConnection
-  value: 'ACR-Dev'
+  value: 'ACR-QA'
 
 - name: imageRepository
   value: 'dmscompanyserviceqa'
