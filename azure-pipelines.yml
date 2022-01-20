@@ -13,7 +13,7 @@ variables:
   value: 'ACR-Dev'
 
 - name: imageRepository
-  value: 'dmscompanyservice'
+  value: 'dmscompanyserviceqa'
 
 - name: dockerfilePath
   value: '**/Dockerfile'
@@ -28,7 +28,7 @@ variables:
   value: 'DMS-companyService'
 
 - name: 'ACR'
-  value: 'microservicesacrafrdev.azurecr.io'
+  value: 'microservicesacrafrqa.azurecr.io'
 
 - name: 'checkmarxTeam'
   value: '/CxServer/AB-InBev/AFR/DMS'
