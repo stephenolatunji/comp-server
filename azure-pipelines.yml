@@ -34,13 +34,13 @@ variables:
   value: '/CxServer/AB-InBev/AFR/DMS'
 
 jobs:
-# - job: SecureScan
-#   displayName: SecureScan
-#   pool:
-#     vmImage: 'ubuntu-latest'
-#   steps:
-#     - checkout: self
-#     - checkout: appsectemplates
+- job: SecureScan
+  displayName: SecureScan
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+    - checkout: self
+    - checkout: appsectemplates
 
     # - template: pipeline_templates/Security_tasks/prepareSonarCloud.yml@appsectemplates
     #   parameters:
@@ -56,24 +56,22 @@ jobs:
     #     sonarCloudGate: false
     #     SCServiceConnection: 'SonarcloudServer'
   
-    #     scanSnyk: true
-    #     SKFailOnIssues: false
-    #     SkServiceConnection: 'SnykServer'
-    #     SkOrganization: '6faff7dd-4e52-4ac6-af3c-a5d1eaa27be2'
-    #     SkAdditionalArgs: '--all-projects --detection-depth=4'
-        
-    #     scanGitleaks: true
+        # scanSnyk: true
+        # SKFailOnIssues: false
+        # SkServiceConnection: 'SnykServer'
+        # SkOrganization: '6faff7dd-4e52-4ac6-af3c-a5d1eaa27be2'
+        # SkAdditionalArgs: '--all-projects --detection-depth=4'       
+        # #scanGitleaks: true
+        # scanSnykContainer: true
+        # SkDockerImageName: '$(ACR)/$(imageRepository):$(tag)'
+        # SkDockerFilePath: './$(Build.Repository.Name)/Dockerfile'
 
-    #     scanSnykContainer: true
-    #     SkDockerImageName: '$(ACR)/$(imageRepository):$(tag)'
-    #     SkDockerFilePath: './$(Build.Repository.Name)/Dockerfile'
-
-    #     scanCheckmarx: true
-    #     CxServiceConnection: 'CheckmarxServer'
-    #     CxPreset: 'ASA_SDLC_Ready'
-    #     CxEnableSyncScan: false
-    #     CxEnableThreshold: false
-    #     CxTeamName: $(checkmarxTeam)
+        # scanCheckmarx: true
+        # CxServiceConnection: 'CheckmarxServer'
+        # CxPreset: 'ASA_SDLC_Ready'
+        # CxEnableSyncScan: false
+        # CxEnableThreshold: false
+        # CxTeamName: $(checkmarxTeam)
 
 
 - job: Deploy
