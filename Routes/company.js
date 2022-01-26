@@ -44,7 +44,7 @@ router.route('/:id')
 
 
 
-//  Get company by code
+//  Get company by DMS Distributor's code
 router.route('/code/:id')
 .get(async(req, res)=>{
     const id = req.params.id;
@@ -118,6 +118,26 @@ router.route('/companies/:country')
             }
             else{
                 return res.status(200).json({success: true, result: results.recordset});
+            }
+        })
+    }
+    catch(err){
+        res.status(500).json({success: false, msg: 'Server error!'})
+    }
+});
+
+router.route('/syspro/:code')
+.get(async(req, res)=>{
+    const sysprocode = req.params.code;
+
+    try{
+        await connectDB.query(`EXEC getCompanyBySYSCode @SYSCode = '${sysprocode}'`, (err, results)=>{
+            if(err){
+                
+                return res.status(404).json({success: false, msg: 'Can not find company'});
+            }
+            else{
+                return res.status(200).json({success: true, result: results.recordset[0]});
             }
         })
     }
