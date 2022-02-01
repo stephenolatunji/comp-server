@@ -44,7 +44,7 @@ router.route('/:id')
 
 
 
-//  Get company by code
+//  Get company by DMS Distributor's code
 router.route('/code/:id')
 .get(async(req, res)=>{
     const id = req.params.id;
@@ -125,5 +125,57 @@ router.route('/companies/:country')
         res.status(500).json({success: false, msg: 'Server error!'})
     }
 });
+
+router.route('/syspro/:code')
+.get(async(req, res)=>{
+    const sysprocode = req.params.code;
+
+    try{
+        await connectDB.query(`EXEC getCompanyBySYSCode @SYSCode = '${sysprocode}'`, (err, results)=>{
+            if(err){
+                
+                return res.status(404).json({success: false, msg: 'Can not find company'});
+            }
+            else{
+                return res.status(200).json({success: true, result: results.recordset[0]});
+            }
+        })
+    }
+    catch(err){
+        res.status(500).json({success: false, msg: 'Server error!'})
+    }
+});
+
+router.route('/rate-distributor/:id')
+    .patch(async(req, res) =>{
+        const id = req.params.id;
+        const stars = req.body.stars;
+
+        try{
+            await connectDB.query(`EXEC getCompanyById @id = ${id}`, async(err, results) =>{
+                if(results.recordset.length > 0){
+                    const record = results.recordset[0];
+                    const raters = parseInt(record.raters + 1);
+                    const ratings = parseInt(record.ratings + stars);
+                    const currentRating = (parseFloat(ratings/raters)).toFixed(1);
+                    await connectDB.query(`EXEC rateDistributors @id = ${id}, @rate = ${ratings}, 
+                    @raters = ${raters}, @stars = ${currentRating}`, (err, results) =>{
+                        if(results.rowsAffected > 0){
+                            return res.status(200).json({success: true, result: results.recordset[0]})
+                        }
+                        else{
+                            return res.status(400).json({success: false, msg: 'Rating failed'})
+                        }
+                    })
+                }
+                else{
+                    return res.status(400).json({success: false, msg: 'Distributor not found'})
+                }
+            })
+        }
+        catch(err){
+            res.status(500).json({success: false, msg: 'Server error!'})
+        }
+    })
 
 module.exports = router;
