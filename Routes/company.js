@@ -146,4 +146,36 @@ router.route('/syspro/:code')
     }
 });
 
+router.route('/rate-distributor/:id')
+    .patch(async(req, res) =>{
+        const id = req.params.id;
+        const stars = req.body.stars;
+
+        try{
+            await connectDB.query(`EXEC getCompanyById @id = ${id}`, async(err, results) =>{
+                if(results.recordset.length > 0){
+                    const record = results.recordset[0];
+                    const raters = parseInt(record.raters + 1);
+                    const ratings = parseInt(record.ratings + stars);
+                    const currentRating = (parseFloat(ratings/raters)).toFixed(1);
+                    await connectDB.query(`EXEC rateDistributors @id = ${id}, @rate = ${ratings}, 
+                    @raters = ${raters}, @stars = ${currentRating}`, (err, results) =>{
+                        if(results.rowsAffected > 0){
+                            return res.status(200).json({success: true, result: results.recordset[0]})
+                        }
+                        else{
+                            return res.status(400).json({success: false, msg: 'Rating failed'})
+                        }
+                    })
+                }
+                else{
+                    return res.status(400).json({success: false, msg: 'Distributor not found'})
+                }
+            })
+        }
+        catch(err){
+            res.status(500).json({success: false, msg: 'Server error!'})
+        }
+    })
+
 module.exports = router;
