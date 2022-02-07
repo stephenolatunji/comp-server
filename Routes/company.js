@@ -150,28 +150,45 @@ router.route('/rate-distributor/:id')
     .patch(async(req, res) =>{
         const id = req.params.id;
         const stars = req.body.stars;
+        const comment = req.body.comment;
+        const companyId = req.body.companyId;
+        const reviewerId = req.body.reviewerId;
 
         try{
-            await connectDB.query(`EXEC getCompanyById @id = ${id}`, async(err, results) =>{
-                if(results.recordset.length > 0){
-                    const record = results.recordset[0];
-                    const raters = parseInt(record.raters + 1);
-                    const ratings = parseInt(record.ratings + stars);
-                    const currentRating = (parseFloat(ratings/raters)).toFixed(1);
-                    await connectDB.query(`EXEC rateDistributors @id = ${id}, @rate = ${ratings}, 
-                    @raters = ${raters}, @stars = ${currentRating}`, (err, results) =>{
-                        if(results.rowsAffected > 0){
-                            return res.status(200).json({success: true, result: results.recordset[0]})
-                        }
-                        else{
-                            return res.status(400).json({success: false, msg: 'Rating failed'})
-                        }
-                    })
-                }
-                else{
-                    return res.status(400).json({success: false, msg: 'Distributor not found'})
-                }
-            })
+            if(stars > 0 && stars <= 5){
+                await connectDB.query(`EXEC getCompanyById @id = ${id}`, async(err, results) =>{
+                    if(results.recordset.length > 0){
+                        const record = results.recordset[0];
+                        const raters = parseInt(record.raters + 1);
+                        const ratings = parseInt(record.ratings + stars);
+                        const currentRating = (parseFloat(ratings/raters)).toFixed(1);
+                        await connectDB.query(`EXEC rateDistributors @id = ${id}, @rate = ${ratings}, 
+                        @raters = ${raters}, @stars = ${currentRating}`, async(err, results) =>{
+                            if(results.rowsAffected > 0){
+                            await connectDB.query(`EXEC createReview @companyId = '${companyId}', 
+                            @reviewerId = '${reviewerId}', @comment = '${comment}', @rating = '${stars}'`, (err, result) =>{
+                                if(result.rowsAffected > 0){
+                                    return res.status(200).json({success: true, msg: "Review added successfully", result: results.recordset[0]})
+                                }
+                                else{
+                                    res.status(400).json({success: false, msg: 'Review not added'});
+                                }
+                            })
+                        
+                            }
+                            else{
+                                return res.status(400).json({success: false, msg: 'Rating failed'})
+                            }
+                        })
+                    }
+                    else{
+                        return res.status(400).json({success: false, msg: 'Distributor not found'})
+                    }
+                })
+            }
+            else{
+                return res.status(400).json({success: false, msg: 'Value must be within the range of 0 and 5'})
+            }
         }
         catch(err){
             res.status(500).json({success: false, msg: 'Server error!'})
