@@ -1,5 +1,5 @@
 trigger:
-- qa
+- production
 
 resources:
   repositories:
@@ -8,12 +8,12 @@ resources:
     name: DevSecOps/DevSecOps
 
 variables:
-- group: CompanyServiceQA
+- group: CompanyServicePROD
 - name: dockerRegistryServiceConnection
   value: 'ACR-QA'
 
 - name: imageRepository
-  value: 'dmscompanyserviceqa'
+  value: 'dmscompanyserviceprod'
 
 - name: dockerfilePath
   value: '**/Dockerfile'
@@ -28,7 +28,7 @@ variables:
   value: 'DMS-companyService'
 
 - name: 'ACR'
-  value: 'microservicesacrafrqa.azurecr.io'
+  value: 'microservicesacrafrprd.azurecr.io'
 
 - name: 'checkmarxTeam'
   value: '/CxServer/AB-InBev/AFR/DMS'
