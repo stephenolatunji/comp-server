@@ -28,10 +28,10 @@ app.get('/', (req, res) => {
     res.send('Welcome to DMS!')
 });
 
-app.use('/company-ms/register', register);
-app.use('/company-ms/company', company);
-app.use('/company-ms/company-status', setStatus);
-app.use('/company-ms/upload-company', upload);
+app.use('/register', register);
+app.use('/company', company);
+app.use('/company-status', setStatus);
+app.use('/upload-company', upload);
 
 const port = process.env.PORT || 80;
 
