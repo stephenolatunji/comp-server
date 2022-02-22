@@ -78,8 +78,6 @@ jobs:
   displayName: Deploy
   pool:
     name: 'AFR_Prod_Self_hosted_Pool'
-    demands: 
-    - agent.os -equals Linux
 
   steps:
     - checkout: self
