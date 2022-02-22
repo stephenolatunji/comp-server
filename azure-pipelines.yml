@@ -10,7 +10,7 @@ resources:
 variables:
 - group: CompanyServicePROD
 - name: dockerRegistryServiceConnection
-  value: 'ACR-QA'
+  value: 'ACR-PROD'
 
 - name: imageRepository
   value: 'dmscompanyserviceprod'
