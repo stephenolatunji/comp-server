@@ -153,6 +153,7 @@ router.route('/rate-distributor/:id')
         const comment = req.body.comment;
         const companyId = req.body.companyId;
         const reviewerId = req.body.reviewerId;
+        const date = new Date().getFullYear()+'-'+(new Date().getMonth()+parseInt("1"))+'-'+new Date().getDate();
 
         try{
             if(stars > 0 && stars <= 5){
@@ -166,7 +167,7 @@ router.route('/rate-distributor/:id')
                         @raters = ${raters}, @stars = ${currentRating}`, async(err, results) =>{
                             if(results.rowsAffected > 0){
                             await connectDB.query(`EXEC createReview @companyId = '${companyId}', 
-                            @reviewerId = '${reviewerId}', @comment = '${comment}', @rating = '${stars}'`, (err, result) =>{
+                            @reviewerId = '${reviewerId}', @comment = '${comment}', @rating = '${stars}', @date = '${date}'`, (err, result) =>{
                                 if(result.rowsAffected > 0){
                                     return res.status(200).json({success: true, msg: "Review added successfully", result: results.recordset[0]})
                                 }
