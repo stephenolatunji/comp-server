@@ -10,7 +10,7 @@ router.route('/status/:id')
     const status = req.body.status;
  
     try{
-        await connectDB.query(`EXEC updateCompanyStatus @status = '${status}' @id = '${id}'`, (err, results)=>{console.log(results);
+        await connectDB.query(`EXEC updateCompanyStatus @status = '${status}', @id = '${id}'`, (err, results)=>{
             if(err){
                 return res.status(404).json({success: false, msg: 'Can not update status'});
             }
