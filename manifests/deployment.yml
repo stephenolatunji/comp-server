@@ -1,19 +1,21 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: dmscompanyservice 
+  name: dmscompanyserviceprod 
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: dmscompanyservice
+      app: dmscompanyserviceprod
   template:
     metadata:
       labels:
-        app: dmscompanyservice 
+        app: dmscompanyserviceprod 
     spec:
+      nodeSelector:
+        "kubernetes.io/os": linux      
       containers:
-        - name: dmscompanyservice 
-          image: dmsacr.azurecr.io/dmscompanyservice
+        - name: dmscompanyserviceprod 
+          image: microservicesacrafrprd.azurecr.io/dmscompanyserviceprod
           ports:
           - containerPort: 80
