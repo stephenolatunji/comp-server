@@ -1,10 +1,11 @@
 const express = require('express');
 const connectDB = require('../config/db');
 const router = express.Router();
+const auth = require('../middleware/auth')
 
 // Get all companies
 router.route('/getall')
-.get(async(req, res)=>{
+.get(auth, async(req, res)=>{
     try{
         await connectDB.query(`EXEC getAllCompanies`, (err, results)=>{
             if(err){
@@ -23,7 +24,7 @@ router.route('/getall')
 
 // Get company by Id
 router.route('/:id')
-.get(async(req, res)=>{
+.get(auth, async(req, res)=>{
     const id = req.params.id;
 
     try{
@@ -46,7 +47,7 @@ router.route('/:id')
 
 //  Get company by DMS Distributor's code
 router.route('/code/:id')
-.get(async(req, res)=>{
+.get(auth, async(req, res)=>{
     const id = req.params.id;
 
     try{
@@ -67,7 +68,7 @@ router.route('/code/:id')
 
 // Get all company by status
 router.route('/status/:status')
-.get(async(req, res)=>{
+.get(auth, async(req, res)=>{
     const status = req.params.status;
  
     try{
@@ -87,7 +88,7 @@ router.route('/status/:status')
 }),
 
 router.route('/salesforce/:code')
-.get(async(req, res)=>{
+.get(auth, async(req, res)=>{
     const salesforceCode = req.params.code;
 
     try{
@@ -107,7 +108,7 @@ router.route('/salesforce/:code')
 });
 
 router.route('/companies/:country')
-.get(async(req, res)=>{
+.get(auth, async(req, res)=>{
     const country = req.params.country;
 
     try{
@@ -127,7 +128,7 @@ router.route('/companies/:country')
 });
 
 router.route('/syspro/:code')
-.get(async(req, res)=>{
+.get(auth, async(req, res)=>{
     const sysprocode = req.params.code;
 
     try{
@@ -147,7 +148,7 @@ router.route('/syspro/:code')
 });
 
 router.route('/rate-distributor/:id')
-    .patch(async(req, res) =>{
+    .patch(auth, async(req, res) =>{
         const id = req.params.id;
         const stars = req.body.stars;
         const comment = req.body.comment;

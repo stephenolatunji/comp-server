@@ -1,11 +1,12 @@
 const express = require('express');
 const connectDB = require('../config/db');
 const router = express.Router();
+const auth = require('../middleware/auth');
 
 
 router.route('/status/:id')
 
-.patch(async(req, res) => {
+.patch(auth, async(req, res) => {
     const id = req.params.id;
     const status = req.body.status;
  

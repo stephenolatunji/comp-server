@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const connectDB = require('../config/db');
 const randomize = require('randomatic');
+const auth = require('../middleware/auth');
 
 
 router.route('/')
-    .post(async(req, res)=>{
+    .post(auth, async(req, res)=>{
         const salesforceCode = req.body.salesforceCode;
         const sysproCode = req.body.sysproCode;
         const compName = req.body.compName; 
